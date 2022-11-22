@@ -91,10 +91,10 @@ const logout = async (user) => {
 };
 
 const avatarUpdate = async (user, newAvatarPath) => {
-  console.log(user);
+  // console.log(user);
   user.avatarURL = newAvatarPath;
-  console.log(user);
-  console.log(newAvatarPath);
+  // console.log(user);
+  // console.log(newAvatarPath);
   await User.findByIdAndUpdate(user._id, user);
   return {
     status: "success",

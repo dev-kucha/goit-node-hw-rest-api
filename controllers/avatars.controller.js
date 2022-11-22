@@ -10,13 +10,15 @@ async function avatarTransform(fileName) {
   const image = await jimp.read(`${source}/${fileName}`);
   const [name, extention] = fileName.split(".");
   await image.resize(250, 250);
-  const newAvatarPath = `${destination}/${name}-${nanoid(6)}.${extention}`;
+  const newAvatarName = `${name}-${nanoid(6)}.${extention}`;
+  const newAvatarPath = path.join(destination, newAvatarName);
   await image.writeAsync(newAvatarPath);
-  return newAvatarPath;
+  return newAvatarName;
 }
 
 async function uploadController(req, res, next) {
-  const newAvatarPath = await avatarTransform(req.file.originalname);
+  const newAvatarName = await avatarTransform(req.file.originalname);
+  const newAvatarPath = path.join(req.headers.host, "/avatars/", newAvatarName);
   const result = await avatarUpdate(req.user, newAvatarPath);
   return res.json(result);
 }
