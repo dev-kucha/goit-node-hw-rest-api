@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 
 const { JWT_SECRET } = process.env;
 
@@ -13,10 +14,24 @@ const registration = async (email, password, subscription = "starter") => {
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
 
+  /*  */
+  const gravatarUrl = gravatar.url(
+    "email",
+    {
+      s: "100",
+      r: "x",
+      d: "retro",
+    },
+    true
+  );
+  console.log(gravatarUrl);
+  /*  */
+
   const user = new User({
     email,
     password: hashedPassword,
     subscription,
+    avatarURL: gravatarUrl,
   });
 
   try {
@@ -75,8 +90,23 @@ const logout = async (user) => {
   };
 };
 
+const avatarUpdate = async (user, newAvatarPath) => {
+  // console.log(user);
+  user.avatarURL = newAvatarPath;
+  // console.log(user);
+  // console.log(newAvatarPath);
+  await User.findByIdAndUpdate(user._id, user);
+  return {
+    status: "success",
+    message: {
+      avatarURL: newAvatarPath,
+    },
+  };
+};
+
 module.exports = {
   registration,
   login,
   logout,
+  avatarUpdate,
 };
