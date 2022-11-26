@@ -18,8 +18,8 @@ async function avatarTransform(fileName) {
 
 async function uploadController(req, res, next) {
   const newAvatarName = await avatarTransform(req.file.originalname);
-  const newAvatarPath = path.join(req.headers.host, "/avatars/", newAvatarName);
-  const result = await avatarUpdate(req.user, newAvatarPath);
+  const newAvatarUrl = `http://${req.headers.host}/avatars/${newAvatarName}`;
+  const result = await avatarUpdate(req.user, newAvatarUrl);
   return res.json(result);
 }
 
