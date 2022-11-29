@@ -60,7 +60,12 @@ const registration = async (email, password, subscription = "starter") => {
 };
 
 const verifyEmail = async (verificationToken) => {
-  console.log("service", verificationToken);
+  // console.log("service", verificationToken);
+  const user = await User.findOne({ verificationToken });
+  console.log(user);
+  if (user) {
+    User.findByIdAndUpdate(user._id, { verify: true });
+  }
 };
 
 const login = async (email, password) => {
