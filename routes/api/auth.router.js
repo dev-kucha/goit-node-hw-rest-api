@@ -3,6 +3,7 @@ const authRouter = express.Router();
 
 const {
   registrationController,
+  verifyEmailController,
   loginController,
   logoutController,
   currentController,
@@ -15,6 +16,10 @@ const { auth } = require("../../middlewares/authMiddleware");
 const uploadAvatarMiddleware = require("../../middlewares/uploadAvatarMiddleware");
 
 authRouter.post("/register", tryCatchWrapper(registrationController));
+authRouter.get(
+  "/verify/:verificationToken",
+  tryCatchWrapper(verifyEmailController)
+);
 authRouter.post("/login", tryCatchWrapper(loginController));
 authRouter.post(
   "/logout",

@@ -59,6 +59,10 @@ const registration = async (email, password, subscription = "starter") => {
   };
 };
 
+const verifyEmail = async (verificationToken) => {
+  console.log("service", verificationToken);
+};
+
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
@@ -113,6 +117,7 @@ const avatarUpdate = async (user, newAvatarPath) => {
 
 module.exports = {
   registration,
+  verifyEmail,
   login,
   logout,
   avatarUpdate,

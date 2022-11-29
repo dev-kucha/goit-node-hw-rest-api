@@ -3,7 +3,12 @@ const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
 const { SENDGRID_API_KEY } = process.env;
 
-const { registration, login, logout } = require("../service/authService");
+const {
+  registration,
+  verifyEmail,
+  login,
+  logout,
+} = require("../service/authService");
 
 const schema = Joi.object({
   password: Joi.string().min(1).max(60).required(),
@@ -17,7 +22,7 @@ const schema = Joi.object({
 async function sendMail(email, verificationToken) {
   sgMail.setApiKey(SENDGRID_API_KEY);
 
-  const validationUrl = `http://localhost:3000/users/verify/${verificationToken}`;
+  const validationUrl = `http://localhost:3000/api/users/verify/${verificationToken}`;
 
   const msg = {
     to: email,
@@ -52,6 +57,12 @@ async function registrationController(req, res, next) {
 
   return res.status(201).json(registeredUser);
 }
+async function verifyEmailController(req, res, next) {
+  const { verificationToken } = req.query;
+  verifyEmail(verificationToken);
+  console.log("controller", verificationToken);
+  return res.json({ ok: true });
+}
 
 async function loginController(req, res, next) {
   const { email, password } = req.body;
@@ -72,6 +83,7 @@ async function currentController(req, res, next) {
 
 module.exports = {
   registrationController,
+  verifyEmailController,
   loginController,
   logoutController,
   currentController,
