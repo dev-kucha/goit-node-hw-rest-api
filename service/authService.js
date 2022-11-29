@@ -63,8 +63,10 @@ const verifyEmail = async (verificationToken) => {
   // console.log("service", verificationToken);
   const user = await User.findOne({ verificationToken });
   console.log(user);
-  if (user) {
-    User.findByIdAndUpdate(user._id, { verify: true });
+  if (user && !user.verify) {
+    await User.findByIdAndUpdate(user._id, { verify: true });
+
+    return true;
   }
 };
 
