@@ -22,9 +22,9 @@ async function sendMail(email, verificationToken) {
   const msg = {
     to: email,
     from: "ukucher@gmail.com",
-    subject: "Verification",
-    html: `Please, go to link ${validationUrl}for verification you email address`,
-    text: `Please, go to link ${validationUrl}for verification you email address`,
+    subject: "Please, verify you email address",
+    html: `Please, open this link ${validationUrl} for verification you email address`,
+    text: `Please, open this link ${validationUrl} for verification you email address`,
   };
   const response = await sgMail.send(msg);
   console.log("Email sent", response);
