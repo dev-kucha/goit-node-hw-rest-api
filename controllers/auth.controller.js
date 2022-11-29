@@ -1,4 +1,7 @@
 const Joi = require("joi");
+const sgMail = require("@sendgrid/mail");
+require("dotenv").config();
+const { SENDGRID_API_KEY } = process.env;
 
 const { registration, login, logout } = require("../service/authService");
 
@@ -10,6 +13,22 @@ const schema = Joi.object({
   }),
   subscription: Joi.string(),
 });
+
+async function sendMail(email, verificationToken) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+
+  const validationUrl = `http://localhost:3000/users/verify/${verificationToken}`;
+
+  const msg = {
+    to: email,
+    from: "ukucher@gmail.com",
+    subject: "Verification",
+    html: `Please, go to link ${validationUrl}for verification you email address`,
+    text: `Please, go to link ${validationUrl}for verification you email address`,
+  };
+  const response = await sgMail.send(msg);
+  console.log("Email sent", response);
+}
 
 async function registrationController(req, res, next) {
   const { email, password, subscription } = req.body;
@@ -23,6 +42,14 @@ async function registrationController(req, res, next) {
   }
 
   const registeredUser = await registration(email, password, subscription);
+  // console.log(registeredUser);
+  try {
+    const { email, verificationToken } = registeredUser.user;
+    sendMail(email, verificationToken);
+  } catch (error) {
+    console.error(error);
+  }
+
   return res.status(201).json(registeredUser);
 }
 

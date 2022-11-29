@@ -2,10 +2,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { nanoid } = require("nanoid");
-const sgMail = require("@sendgrid/mail");
+// const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
 
-const { JWT_SECRET, SENDGRID_API_KEY } = process.env;
+const { JWT_SECRET } = process.env;
 
 const User = require("../models/user.model");
 const {
@@ -51,27 +51,28 @@ const registration = async (email, password, subscription = "starter") => {
     throw RegistrationConflictError;
   }
 
-  async function sendMail() {
-    sgMail.setApiKey(SENDGRID_API_KEY);
-    const msg = {
-      to: email,
-      from: "ukucher@gmail.com",
-      subject: "Verification",
-      html: `Please, go to link ${verificationToken}for verification you email address`,
-      text: "Please, go to link for verification you email address",
-    };
-    const response = await sgMail.send(msg);
-    console.log("Email sent", response);
-  }
+  // async function sendMail() {
+  //   sgMail.setApiKey(SENDGRID_API_KEY);
+  //   const msg = {
+  //     to: email,
+  //     from: "ukucher@gmail.com",
+  //     subject: "Verification",
+  //     html: `Please, go to link ${verificationToken}for verification you email address`,
+  //     text: "Please, go to link for verification you email address",
+  //   };
+  //   const response = await sgMail.send(msg);
+  //   console.log("Email sent", response);
+  // }
 
-  sendMail().catch((error) => {
-    console.error(error);
-  });
+  // sendMail().catch((error) => {
+  //   console.error(error);
+  // });
 
   return {
     user: {
       email: email,
       subscription: subscription,
+      verificationToken,
     },
   };
 };
