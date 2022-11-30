@@ -92,19 +92,6 @@ const enotherVerifyEmail = async (email) => {
   }
 
   return user;
-  // // console.log("service", verificationToken);
-  // const user = await User.findOne({ verificationToken });
-  // // console.log(user);
-  // if (!user) {
-  //   throw new NotFoundError("VerificationToken is wrong");
-  // }
-  // if (user && !user.verify) {
-  //   await User.findByIdAndUpdate(user._id, {
-  //     verify: true,
-  //     verificationToken: null,
-  //   });
-  //   return true;
-  // }
 };
 
 const login = async (email, password) => {
