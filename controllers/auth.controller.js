@@ -6,6 +6,7 @@ const { SENDGRID_API_KEY } = process.env;
 const {
   registration,
   verifyEmail,
+  enotherVerifyEmail,
   login,
   logout,
 } = require("../service/authService");
@@ -61,9 +62,27 @@ async function registrationController(req, res, next) {
 async function verifyEmailController(req, res, next) {
   const { verificationToken } = req.params;
   const response = await verifyEmail(verificationToken);
-  console.log("response", response);
+  // console.log("response", response);
   if (response) {
     return res.status(200).json({ message: "Verification successful" });
+  }
+}
+
+async function requestEnotherVerifyController(req, res, next) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "missing required field email" });
+  }
+
+  const response = await enotherVerifyEmail(email);
+
+  if (response) {
+    const { email, verificationToken } = response;
+    sendMail(email, verificationToken);
+    return res.status(200).json({
+      message: "Verification email sent",
+    });
   }
 }
 
@@ -86,6 +105,7 @@ async function currentController(req, res, next) {
 
 module.exports = {
   registrationController,
+  requestEnotherVerifyController,
   verifyEmailController,
   loginController,
   logoutController,

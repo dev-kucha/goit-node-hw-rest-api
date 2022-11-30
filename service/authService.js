@@ -9,6 +9,7 @@ const { JWT_SECRET } = process.env;
 const User = require("../models/user.model");
 const {
   NotFoundError,
+  WrongParametersError,
   RegistrationConflictError,
   NotAuthorizedError,
 } = require("../helpers/errors");
@@ -79,6 +80,33 @@ const verifyEmail = async (verificationToken) => {
   }
 };
 
+const enotherVerifyEmail = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new NotFoundError("User is not found");
+  }
+
+  if (user && user.verify) {
+    throw new WrongParametersError("Verification has already been passed");
+  }
+
+  return user;
+  // // console.log("service", verificationToken);
+  // const user = await User.findOne({ verificationToken });
+  // // console.log(user);
+  // if (!user) {
+  //   throw new NotFoundError("VerificationToken is wrong");
+  // }
+  // if (user && !user.verify) {
+  //   await User.findByIdAndUpdate(user._id, {
+  //     verify: true,
+  //     verificationToken: null,
+  //   });
+  //   return true;
+  // }
+};
+
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
@@ -134,6 +162,7 @@ const avatarUpdate = async (user, newAvatarPath) => {
 module.exports = {
   registration,
   verifyEmail,
+  enotherVerifyEmail,
   login,
   logout,
   avatarUpdate,

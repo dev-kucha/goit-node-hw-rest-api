@@ -4,6 +4,7 @@ const authRouter = express.Router();
 const {
   registrationController,
   verifyEmailController,
+  requestEnotherVerifyController,
   loginController,
   logoutController,
   currentController,
@@ -20,6 +21,7 @@ authRouter.get(
   "/verify/:verificationToken",
   tryCatchWrapper(verifyEmailController)
 );
+authRouter.post("/verify/", tryCatchWrapper(requestEnotherVerifyController));
 authRouter.post("/login", tryCatchWrapper(loginController));
 authRouter.post(
   "/logout",
