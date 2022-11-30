@@ -57,10 +57,11 @@ async function registrationController(req, res, next) {
 
   return res.status(201).json(registeredUser);
 }
+
 async function verifyEmailController(req, res, next) {
   const { verificationToken } = req.params;
-  const response = verifyEmail(verificationToken);
-  // console.log("controller", verificationToken);
+  const response = await verifyEmail(verificationToken);
+  console.log("response", response);
   if (response) {
     return res.status(200).json({ message: "Verification successful" });
   }
