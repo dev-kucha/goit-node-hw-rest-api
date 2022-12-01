@@ -97,7 +97,7 @@ const enotherVerifyEmail = async (email) => {
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
-  if (!user) {
+  if (!user || !user.verify) {
     throw new NotAuthorizedError("Email or password is wrong");
   }
 

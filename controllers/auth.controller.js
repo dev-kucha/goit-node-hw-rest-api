@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
-const { SENDGRID_API_KEY } = process.env;
+const { SENDGRID_API_KEY, HOST, PORT, SENDER_ADDRESS } = process.env;
 
 const {
   registration,
@@ -23,11 +23,11 @@ const schema = Joi.object({
 async function sendMail(email, verificationToken) {
   sgMail.setApiKey(SENDGRID_API_KEY);
 
-  const validationUrl = `http://localhost:3000/api/users/verify/${verificationToken}`;
+  const validationUrl = `http://${HOST}:${PORT}/api/users/verify/${verificationToken}`;
 
   const msg = {
     to: email,
-    from: "ukucher@gmail.com",
+    from: SENDER_ADDRESS,
     subject: "Please, verify you email address",
     html: `Please, open this link ${validationUrl} for verification you email address`,
     text: `Please, open this link ${validationUrl} for verification you email address`,
