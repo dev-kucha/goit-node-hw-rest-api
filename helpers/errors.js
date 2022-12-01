@@ -12,6 +12,13 @@ class ValidationError extends CustomError {
   }
 }
 
+class NotFoundError extends CustomError {
+  constructor(message) {
+    super(message);
+    this.status = 404;
+  }
+}
+
 class WrongParametersError extends CustomError {
   constructor(message) {
     super(message);
@@ -36,6 +43,7 @@ class NotAuthorizedError extends CustomError {
 module.exports = {
   CustomError,
   ValidationError,
+  NotFoundError,
   WrongParametersError,
   RegistrationConflictError,
   NotAuthorizedError,

@@ -1,11 +1,15 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
+const { nanoid } = require("nanoid");
+require("dotenv").config();
 
 const { JWT_SECRET } = process.env;
 
 const User = require("../models/user.model");
 const {
+  NotFoundError,
+  WrongParametersError,
   RegistrationConflictError,
   NotAuthorizedError,
 } = require("../helpers/errors");
@@ -24,14 +28,17 @@ const registration = async (email, password, subscription = "starter") => {
     },
     true
   );
-  console.log(gravatarUrl);
+  // console.log(gravatarUrl);
   /*  */
+
+  const verificationToken = nanoid();
 
   const user = new User({
     email,
     password: hashedPassword,
     subscription,
     avatarURL: gravatarUrl,
+    verificationToken,
   });
 
   try {
@@ -44,18 +51,53 @@ const registration = async (email, password, subscription = "starter") => {
 
     throw RegistrationConflictError;
   }
+
   return {
     user: {
       email: email,
       subscription: subscription,
+      verificationToken,
     },
   };
+};
+
+const verifyEmail = async (verificationToken) => {
+  // console.log("service", verificationToken);
+  const user = await User.findOne({ verificationToken });
+  // console.log(user);
+
+  if (!user) {
+    throw new NotFoundError("VerificationToken is wrong");
+  }
+
+  if (user && !user.verify) {
+    await User.findByIdAndUpdate(user._id, {
+      verify: true,
+      verificationToken: null,
+    });
+
+    return true;
+  }
+};
+
+const enotherVerifyEmail = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new NotFoundError("User is not found");
+  }
+
+  if (user && user.verify) {
+    throw new WrongParametersError("Verification has already been passed");
+  }
+
+  return user;
 };
 
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
-  if (!user) {
+  if (!user || !user.verify) {
     throw new NotAuthorizedError("Email or password is wrong");
   }
 
@@ -106,6 +148,8 @@ const avatarUpdate = async (user, newAvatarPath) => {
 
 module.exports = {
   registration,
+  verifyEmail,
+  enotherVerifyEmail,
   login,
   logout,
   avatarUpdate,
